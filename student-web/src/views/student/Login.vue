@@ -1,142 +1,196 @@
 <template>
   <div class="login-page">
+    <!-- 背景装饰 -->
     <div class="bg-decoration">
       <div class="circle circle-1"></div>
       <div class="circle circle-2"></div>
       <div class="circle circle-3"></div>
     </div>
 
+    <!-- 水印文字 -->
     <div class="watermark">福州大学至诚学院</div>
 
-    <el-card class="login-card" shadow="hover">
-      <div class="login-header">
-        <h2 class="login-title">学生登录</h2>
-        <p class="login-subtitle">欢迎使用在线考试系统</p>
+    <!-- 左侧装饰区 -->
+    <div class="left-section">
+      <div class="logo-container">
+        <h1 class="system-name">在线刷题系统</h1>
+        <p class="system-desc">福州大学至诚学院 - 高效学习平台</p>
       </div>
+      <div class="illustration">
+        <el-icon size="120"><Reading /></el-icon>
+      </div>
+    </div>
 
-      <el-form
+    <!-- 右侧登录区 -->
+    <div class="right-section">
+      <div class="login-card">
+        <h2 class="login-title">学生登录</h2>
+        <!-- 修复：补充el-form的完整闭合 -->
+        <el-form
           :model="form"
           :rules="rules"
           ref="formRef"
-          label-width="80px"
           class="login-form"
-      >
-        <el-form-item label="学号" prop="username">
-          <el-input
+          @submit.prevent="handleLogin"
+        >
+          <el-form-item label="学号" prop="username">
+            <!-- 修复：补充el-input的闭合标签 -->
+            <el-input
               v-model="form.username"
               placeholder="请输入学号"
-              prefix-icon="User"
               size="large"
+              prefix-icon="el-icon-user"
               clearable
-          />
-        </el-form-item>
+            ></el-input>
+          </el-form-item>
 
-        <el-form-item label="密码" prop="password">
-          <el-input
+          <el-form-item label="密码" prop="password">
+            <el-input
               v-model="form.password"
               type="password"
               placeholder="请输入密码"
-              prefix-icon="Lock"
               size="large"
+              prefix-icon="el-icon-lock"
               show-password
-          />
-        </el-form-item>
+              clearable
+            ></el-input>
+          </el-form-item>
 
-        <el-form-item>
-          <div class="btn-group">
+          <el-form-item label="验证码" prop="code">
+            <el-row :gutter="10">
+              <el-col :span="16">
+                <el-input
+                  v-model="form.code"
+                  placeholder="请输入验证码"
+                  size="large"
+                  prefix-icon="el-icon-check"
+                  clearable
+                ></el-input>
+              </el-col>
+              <el-col :span="8">
+                <div class="code-img" @click="generateCode">
+                  {{ randomCode }}
+                </div>
+              </el-col>
+            </el-row>
+          </el-form-item>
+
+          <el-form-item class="login-btn-item">
             <el-button
-                type="primary"
-                size="large"
-                @click="handleLogin"
-                :loading="loading"
-                class="login-btn"
-            >
-              登录
-            </el-button>
-            <el-button size="large" @click="handleReset" class="reset-btn">
-              重置
-            </el-button>
-          </div>
-        </el-form-item>
-      </el-form>
-    </el-card>
+              type="primary"
+              size="large"
+              class="login-btn"
+              @click="handleLogin"
+              :loading="loading"
+            >登录</el-button>
+          </el-form-item>
+        </el-form> <!-- 修复：添加el-form闭合标签 -->
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
+import { Reading } from '@element-plus/icons-vue'
 
 const router = useRouter()
-const formRef = ref(null)
 const loading = ref(false)
+const formRef = ref(null)
 
+// 登录表单
 const form = ref({
   username: '',
-  password: ''
+  password: '',
+  code: ''
 })
 
+// 表单验证规则
 const rules = ref({
   username: [
     { required: true, message: '请输入学号', trigger: 'blur' },
-    { min: 6, max: 12, message: '学号长度为6-12位', trigger: 'blur' }
+    { min: 5, max: 20, message: '学号长度在 5 到 20 个字符', trigger: 'blur' }
   ],
   password: [
     { required: true, message: '请输入密码', trigger: 'blur' },
-    { min: 6, message: '密码长度不能少于6位', trigger: 'blur' }
+    { min: 6, max: 20, message: '密码长度在 6 到 20 个字符', trigger: 'blur' }
+  ],
+  code: [
+    { required: true, message: '请输入验证码', trigger: 'blur' },
+    { len: 4, message: '验证码长度为4个字符', trigger: 'blur' }
   ]
 })
 
+// 随机验证码
+const randomCode = ref('8888')
+
+// 生成随机验证码
+const generateCode = () => {
+  const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+  let code = ''
+  for (let i = 0; i < 4; i++) {
+    code += chars.charAt(Math.floor(Math.random() * chars.length))
+  }
+  randomCode.value = code
+}
+
+// 登录处理
 const handleLogin = async () => {
   try {
+    // 表单验证
     await formRef.value.validate()
+
     loading.value = true
+
+    // 模拟验证码验证
+    if (form.value.code.toUpperCase() !== randomCode.value.toUpperCase()) {
+      ElMessage.error('验证码错误，请重新输入')
+      generateCode() // 重新生成验证码
+      loading.value = false
+      return
+    }
+
+    // 模拟登录API请求
+    await new Promise(resolve => setTimeout(resolve, 1000))
+
+    // 实际项目中这里会验证账号密码并存储token
     localStorage.setItem('token', 'student-token-123456')
-    ElMessage.success('登录成功')
+    localStorage.setItem('userId', form.value.username)
+    ElMessage.success('登录成功！')
+
+    // 跳转到学生首页
     router.push('/student/home')
   } catch (error) {
-    ElMessage.error('登录失败，请检查账号密码')
+    if (error.name !== 'ValidationError') {
+      ElMessage.error('登录失败，请重试！')
+      console.error('登录错误：', error)
+    }
   } finally {
     loading.value = false
   }
 }
 
-const handleReset = () => {
-  formRef.value.resetFields()
-}
+// 初始化生成验证码
+onMounted(() => {
+  generateCode()
+})
 </script>
 
 <style scoped>
 .login-page {
+  display: flex;
   width: 100vw;
   height: 100vh;
   background: linear-gradient(135deg, #e0f7ff 0%, #b3e5fc 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   position: relative;
   overflow: hidden;
   margin: 0;
   padding: 0;
 }
 
-/* 🔥 白色文字水印（在上方） */
-.watermark {
-  position: absolute;
-  top: 80px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 48px;
-  font-weight: bold;
-  color: rgba(255, 255, 255, 0.4);
-  z-index: 1;
-  white-space: nowrap;
-  user-select: none;
-  pointer-events: none;
-  letter-spacing: 4px;
-}
-
+/* 背景装饰样式 */
 .bg-decoration {
   position: absolute;
   width: 100%;
@@ -187,42 +241,92 @@ const handleReset = () => {
   }
 }
 
-.login-card {
-  width: 420px;
-  padding: 40px 30px;
-  border-radius: 16px;
-  z-index: 10;
-  backdrop-filter: blur(10px);
-  background: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+/* 水印样式 */
+.watermark {
+  position: absolute;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 48px;
+  font-weight: bold;
+  color: rgba(255, 255, 255, 0.4);
+  z-index: 1;
+  white-space: nowrap;
+  user-select: none;
+  pointer-events: none;
+  letter-spacing: 4px;
 }
 
-.login-header {
+/* 左侧区域样式 */
+.left-section {
+  flex: 1;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  z-index: 10;
+}
+
+.logo-container {
   text-align: center;
-  margin-bottom: 30px;
+  margin-bottom: 40px;
+}
+
+.system-name {
+  font-size: 36px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: #303133;
+}
+
+.system-desc {
+  font-size: 16px;
+  opacity: 0.8;
+  color: #606266;
+}
+
+.illustration {
+  color: #409eff;
+  opacity: 0.9;
+}
+
+/* 右侧登录区域样式 */
+.right-section {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.login-card {
+  width: 400px;
+  padding: 40px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
 }
 
 .login-title {
   font-size: 28px;
   font-weight: 600;
+  text-align: center;
+  margin-bottom: 30px;
   color: #303133;
-  margin: 0 0 8px 0;
-}
-
-.login-subtitle {
-  font-size: 14px;
-  color: #909399;
-  margin: 0;
 }
 
 .login-form {
-  padding: 0 10px;
+  width: 100%;
 }
 
 :deep(.el-form-item__label) {
   font-weight: 500;
   color: #606266;
+  label-width: 80px;
 }
 
 :deep(.el-input__wrapper) {
@@ -231,26 +335,33 @@ const handleReset = () => {
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
 }
 
-.btn-group {
-  display: flex;
-  gap: 12px;
-  margin-top: 10px;
+/* 验证码样式 */
+.code-img {
+  background-color: #f5f7fa;
+  height: 48px;
+  line-height: 48px;
+  text-align: center;
+  font-size: 18px;
+  letter-spacing: 5px;
+  color: #409eff;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 8px;
+  user-select: none;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+}
+
+.login-btn-item {
+  margin-bottom: 0;
 }
 
 .login-btn {
-  flex: 1;
+  width: 100%;
   border-radius: 8px;
   font-weight: 500;
   font-size: 16px;
   background: #409eff;
   border: none;
-}
-
-.reset-btn {
-  flex: 1;
-  border-radius: 8px;
-  font-weight: 500;
-  font-size: 16px;
-  color: #606266;
+  padding: 12px 0;
 }
 </style>
