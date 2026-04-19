@@ -20,7 +20,6 @@ import java.util.Map;
 @RequestMapping("/messages")
 public class MessagePushController {
 
-    private static final String TEACHER_SUBMIT_NOTICE_TOPIC = "/topic/teacher/submit-notice";
     private final MessagePushService messagePushService;
 
     public MessagePushController(MessagePushService messagePushService) {
@@ -43,12 +42,12 @@ public class MessagePushController {
 
         MessagePayload payload = new MessagePayload();
         payload.setType("STUDENT_SUBMIT");
-        payload.setTitle("学生已交卷");
+        payload.setTitle("Student Submitted");
         payload.setContent(buildSubmitContent(request));
         payload.setTimestamp(LocalDateTime.now());
         payload.setData(data);
 
-        messagePushService.sendToTopic(TEACHER_SUBMIT_NOTICE_TOPIC, payload);
+        messagePushService.sendToTopic(MessagePushService.TEACHER_SUBMIT_NOTICE_TOPIC, payload);
         return ApiResponse.ok("submit-notice-pushed", payload);
     }
 
@@ -68,9 +67,9 @@ public class MessagePushController {
     }
 
     private String buildSubmitContent(StudentSubmitNoticeRequest request) {
-        String examName = StringUtils.hasText(request.getExamName()) ? request.getExamName() : "未命名试卷";
-        String studentName = StringUtils.hasText(request.getStudentName()) ? request.getStudentName() : "未知学生";
-        String className = StringUtils.hasText(request.getClassName()) ? request.getClassName() : "未知班级";
-        return studentName + "（" + className + "）已提交《" + examName + "》";
+        String examName = StringUtils.hasText(request.getExamName()) ? request.getExamName() : "Unnamed Paper";
+        String studentName = StringUtils.hasText(request.getStudentName()) ? request.getStudentName() : "Unknown Student";
+        String className = StringUtils.hasText(request.getClassName()) ? request.getClassName() : "Unknown Class";
+        return studentName + " from " + className + " submitted " + examName;
     }
 }
