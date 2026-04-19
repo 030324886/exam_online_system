@@ -119,7 +119,10 @@ public class PaperExamService {
         ExamSubmission submission = new ExamSubmission();
         submission.setPaperId(request.getPaperId());
         submission.setStudentId(request.getStudentId());
+        submission.setStudentName(null);
+        submission.setClassName(null);
         submission.setObjectiveScore(0);
+        submission.setSubjectiveScore(0);
         submission.setTotalScore(0);
         submission.setStatus("SUBMITTED");
         submission.setSubmittedAt(LocalDateTime.now());
@@ -158,6 +161,7 @@ public class PaperExamService {
         }
 
         submission.setObjectiveScore(objectiveScore);
+        submission.setSubjectiveScore(0);
         submission.setTotalScore(objectiveScore);
         examSubmissionMapper.updateById(submission);
 
@@ -189,7 +193,10 @@ public class PaperExamService {
         ExamSubmission submission = new ExamSubmission();
         submission.setPaperId(request.getPaperId());
         submission.setStudentId(request.getStudentId());
+        submission.setStudentName(request.getStudentName());
+        submission.setClassName(request.getClassName());
         submission.setObjectiveScore(0);
+        submission.setSubjectiveScore(0);
         submission.setTotalScore(0);
         submission.setStatus("SUBMITTED");
         submission.setSubmittedAt(LocalDateTime.now());
@@ -225,6 +232,7 @@ public class PaperExamService {
         }
 
         submission.setObjectiveScore(objectiveScore);
+        submission.setSubjectiveScore(0);
         submission.setTotalScore(objectiveScore);
         submission.setStatus(pendingReviewCount > 0 ? "REVIEWING" : "GRADED");
         examSubmissionMapper.updateById(submission);
@@ -297,6 +305,7 @@ public class PaperExamService {
         }
 
         int totalScore = safeInt(submission.getObjectiveScore()) + subjectiveScore;
+        submission.setSubjectiveScore(subjectiveScore);
         submission.setTotalScore(totalScore);
         submission.setStatus("GRADED");
         examSubmissionMapper.updateById(submission);

@@ -13,6 +13,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ApiResponse<Void> handleCommonException(Exception ex) {
-        return new ApiResponse<>(false, "系统异常: " + ex.getMessage(), null);
+        return new ApiResponse<>(false, "System error: " + ex.getMessage(), null);
     }
 }

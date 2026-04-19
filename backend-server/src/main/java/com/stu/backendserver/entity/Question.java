@@ -11,6 +11,7 @@ public class Question {
     private String type;
     private String stem;
     private String correctAnswer;
+    private String knowledgePoint;
 
     public Long getId() {
         return id;
@@ -42,5 +43,13 @@ public class Question {
 
     public void setCorrectAnswer(String correctAnswer) {
         this.correctAnswer = correctAnswer;
+    }
+
+    public String getKnowledgePoint() {
+        return knowledgePoint;
+    }
+
+    public void setKnowledgePoint(String knowledgePoint) {
+        this.knowledgePoint = knowledgePoint;
     }
 }

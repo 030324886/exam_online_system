@@ -13,7 +13,10 @@ public class ExamSubmission {
     private Long id;
     private Long paperId;
     private Long studentId;
+    private String studentName;
+    private String className;
     private Integer objectiveScore;
+    private Integer subjectiveScore;
     private Integer totalScore;
     private String status;
     @TableField("submitted_at")
@@ -43,12 +46,36 @@ public class ExamSubmission {
         this.studentId = studentId;
     }
 
+    public String getStudentName() {
+        return studentName;
+    }
+
+    public void setStudentName(String studentName) {
+        this.studentName = studentName;
+    }
+
+    public String getClassName() {
+        return className;
+    }
+
+    public void setClassName(String className) {
+        this.className = className;
+    }
+
     public Integer getObjectiveScore() {
         return objectiveScore;
     }
 
     public void setObjectiveScore(Integer objectiveScore) {
         this.objectiveScore = objectiveScore;
+    }
+
+    public Integer getSubjectiveScore() {
+        return subjectiveScore;
+    }
+
+    public void setSubjectiveScore(Integer subjectiveScore) {
+        this.subjectiveScore = subjectiveScore;
     }
 
     public Integer getTotalScore() {
