@@ -52,8 +52,13 @@ import router from '@/router'
 const route = useRoute()
 const userStore = useUserStore()
 
-// 所有菜单配置
-const allMenus = computed(() => router.getRoutes())
+// 所有菜单配置（手动定义，精准控制显示）
+const allMenus = computed(() => [
+  { path: '/teacher/home', meta: { title: '首页', icon: 'House', role: 'teacher' }},
+  { path: '/teacher/question', meta: { title: '试题管理', icon: 'Document', role: 'teacher' }},
+  { path: '/teacher/paper/manual', meta: { title: '手动组卷', icon: 'Edit', role: 'teacher' }},
+  { path: '/admin/home', meta: { title: '首页', icon: 'House', role: 'admin' }}
+])
 
 // 按角色过滤菜单
 const filteredMenus = computed(() => {

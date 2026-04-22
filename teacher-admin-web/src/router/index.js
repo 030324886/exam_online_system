@@ -35,6 +35,32 @@ const routes = [
         name: 'AdminHome',
         component: () => import('@/views/admin/Home.vue'),
         meta: { title: '教务首页', role: 'admin' }
+      },
+      // 试题管理
+      {
+        path: '/teacher/question',
+        name: 'QuestionList',
+        component: () => import('@/views/teacher/question/QuestionList.vue'),
+        meta: { title: '试题管理', role: 'teacher' }
+      },
+      {
+        path: '/teacher/question/add',
+        name: 'QuestionAdd',
+        component: () => import('@/views/teacher/question/QuestionAdd.vue'),
+        meta: { title: '新增试题', role: 'teacher' }
+      },
+      {
+        path: '/teacher/question/edit/:id',
+        name: 'QuestionEdit',
+        component: () => import('@/views/teacher/question/QuestionEdit.vue'),
+        meta: { title: '编辑试题', role: 'teacher' }
+      },
+      // 手动组卷
+      {
+        path: '/teacher/paper/manual',
+        name: 'ManualPaper',
+        component: () => import('@/views/teacher/paper/ManualPaper.vue'),
+        meta: { title: '手动组卷', role: 'teacher' }
       }
     ]
   },
