@@ -61,6 +61,20 @@ const routes = [
         name: 'ManualPaper',
         component: () => import('@/views/teacher/paper/ManualPaper.vue'),
         meta: { title: '手动组卷', role: 'teacher' }
+      },
+      // 试卷管理列表
+      {
+        path: '/teacher/paper',
+        name: 'PaperList',
+        component: () => import('@/views/teacher/paper/PaperList.vue'),
+        meta: { title: '试卷管理', role: 'teacher' }
+      },
+      // 试卷预览详情
+      {
+        path: '/teacher/paper/detail/:id',
+        name: 'PaperDetail',
+        component: () => import('@/views/teacher/paper/PaperDetail.vue'),
+        meta: { title: '试卷预览', role: 'teacher' }
       }
     ]
   },
