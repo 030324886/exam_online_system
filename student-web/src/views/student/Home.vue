@@ -22,7 +22,7 @@
       <!-- 功能入口卡片 -->
       <el-row :gutter="20" class="card-row">
         <!-- 题库刷题卡片 -->
-        <el-col :span="8">
+        <el-col :span="6">
           <el-card
             class="function-card"
             shadow="hover"
@@ -37,7 +37,7 @@
         </el-col>
 
         <!-- 错题本卡片 -->
-        <el-col :span="8">
+        <el-col :span="6">
           <el-card
             class="function-card"
             shadow="hover"
@@ -51,14 +51,29 @@
           </el-card>
         </el-col>
 
-        <!-- 学习统计卡片 -->
-        <el-col :span="8">
-          <el-card class="function-card" shadow="hover">
+        <!-- 学习统计卡片（新增跳转） -->
+        <el-col :span="6">
+          <el-card class="function-card" shadow="hover" @click="goToLearningStats">
             <div class="card-icon">
               <el-icon size="48"><DataBoard /></el-icon>
             </div>
             <div class="card-title">学习统计</div>
             <div class="card-desc">查看学习记录和进度</div>
+          </el-card>
+        </el-col>
+
+        <!-- 在线模考卡片（修复参数） -->
+        <el-col :span="6">
+          <el-card
+            class="function-card"
+            shadow="hover"
+            @click="goToExam"
+          >
+            <div class="card-icon">
+              <el-icon size="48"><Timer /></el-icon>
+            </div>
+            <div class="card-title">在线模考</div>
+            <div class="card-desc">开始计时考试，提交判分</div>
           </el-card>
         </el-col>
       </el-row>
@@ -91,7 +106,7 @@
       </div>
     </div>
 
-    <!-- 背景装饰（和登录页一致） -->
+    <!-- 背景装饰 -->
     <div class="bg-decoration">
       <div class="circle circle-1"></div>
       <div class="circle circle-2"></div>
@@ -104,7 +119,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Document, CircleClose, DataBoard } from '@element-plus/icons-vue'
+import { Document, CircleClose, DataBoard, Timer } from '@element-plus/icons-vue'
 
 const router = useRouter()
 
@@ -123,7 +138,17 @@ const goToWrongQuestion = () => {
   router.push('/wrong/question')
 }
 
-// 退出登录
+// 新增：跳转到学习统计页面
+const goToLearningStats = () => {
+  router.push({ name: 'LearningStats' })
+}
+
+// 修复：在线模考跳转（参数名从examId改为id，匹配路由规则）
+const goToExam = () => {
+  router.push({ name: 'ExamPage', params: { id: 1 } })
+}
+
+// 修复：退出登录逻辑（核心！）
 const logout = async () => {
   try {
     await ElMessageBox.confirm(
@@ -134,18 +159,21 @@ const logout = async () => {
         cancelButtonText: '取消',
         type: 'warning'
       }
-    ).then(() => {
-      ElMessage.success('退出登录成功！')
-      // 实际项目中清除token并跳转登录页
-      localStorage.removeItem('token')
-      localStorage.removeItem('userId')
-      router.push('/student/login')
-    }).catch(() => {
-      ElMessage.info('已取消退出登录')
-    })
+    )
+    // 修复1：清除正确的token字段（student_token，和登录/路由守卫匹配）
+    localStorage.removeItem('student_token')
+    localStorage.removeItem('userId')
+    // 修复2：跳转路径改为/login（而非/student/login，匹配路由规则）
+    router.push('/login')
+    ElMessage.success('退出登录成功！')
   } catch (error) {
-    ElMessage.error('操作失败，请重试！')
-    console.error('退出登录错误：', error)
+    // 取消退出时的提示
+    if (error !== 'cancel') {
+      ElMessage.info('已取消退出登录')
+    } else {
+      ElMessage.error('退出登录失败，请重试！')
+      console.error('退出登录错误：', error)
+    }
   }
 }
 </script>

@@ -25,7 +25,6 @@
     <div class="right-section">
       <div class="login-card">
         <h2 class="login-title">学生登录</h2>
-        <!-- 修复：补充el-form的完整闭合 -->
         <el-form
           :model="form"
           :rules="rules"
@@ -34,7 +33,6 @@
           @submit.prevent="handleLogin"
         >
           <el-form-item label="学号" prop="username">
-            <!-- 修复：补充el-input的闭合标签 -->
             <el-input
               v-model="form.username"
               placeholder="请输入学号"
@@ -84,7 +82,7 @@
               :loading="loading"
             >登录</el-button>
           </el-form-item>
-        </el-form> <!-- 修复：添加el-form闭合标签 -->
+        </el-form>
       </div>
     </div>
   </div>
@@ -144,7 +142,7 @@ const handleLogin = async () => {
 
     loading.value = true
 
-    // 模拟验证码验证
+    // 模拟验证码验证（忽略大小写）
     if (form.value.code.toUpperCase() !== randomCode.value.toUpperCase()) {
       ElMessage.error('验证码错误，请重新输入')
       generateCode() // 重新生成验证码
@@ -152,17 +150,22 @@ const handleLogin = async () => {
       return
     }
 
-    // 模拟登录API请求
+    // 模拟登录API请求（1秒延迟）
     await new Promise(resolve => setTimeout(resolve, 1000))
 
-    // 实际项目中这里会验证账号密码并存储token
-    localStorage.setItem('token', 'student-token-123456')
-    localStorage.setItem('userId', form.value.username)
-    ElMessage.success('登录成功！')
+    // 核心修改：存储和路由守卫匹配的token（student_token）
+    // 替换原有的 token 为 student_token，确保路由守卫能识别登录状态
+    localStorage.setItem('student_token', `student-${form.value.username}-${Date.now()}`)
+    localStorage.setItem('userId', form.value.username) // 保留原有用户ID存储
 
-    // 跳转到学生首页
-    router.push('/student/home')
+    ElMessage.success('登录成功！即将跳转到首页...')
+
+    // 优化跳转逻辑：优先用name匹配，兜底用path
+    await router.push({ name: 'StudentHome' }).catch(() => {
+      router.push('/student/home')
+    })
   } catch (error) {
+    // 只处理非表单验证的错误
     if (error.name !== 'ValidationError') {
       ElMessage.error('登录失败，请重试！')
       console.error('登录错误：', error)
