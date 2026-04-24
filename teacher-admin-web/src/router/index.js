@@ -75,6 +75,27 @@ const routes = [
         name: 'PaperDetail',
         component: () => import('@/views/teacher/paper/PaperDetail.vue'),
         meta: { title: '试卷预览', role: 'teacher' }
+      },
+      // 考试记录
+      {
+        path: '/teacher/exam/record',
+        name: 'ExamRecordList',
+        component: () => import('@/views/teacher/exam/ExamRecordList.vue'),
+        meta: { title: '考试记录', role: 'teacher' }
+      },
+      // 阅卷/考试详情
+      {
+        path: '/teacher/exam/detail/:id',
+        name: 'ExamDetail',
+        component: () => import('@/views/teacher/exam/ExamDetail.vue'),
+        meta: { title: '阅卷', role: 'teacher' }
+      },
+      // 成绩统计
+      {
+        path: '/teacher/exam/stats',
+        name: 'ScoreStats',
+        component: () => import('@/views/teacher/exam/ScoreStats.vue'),
+        meta: { title: '成绩统计', role: 'teacher' }
       }
     ]
   },
