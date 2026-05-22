@@ -1,0 +1,108 @@
+# 三端联调配置说明
+
+## 修改的文件
+
+### 1. 学生端前端配置
+- **文件路径**：dev-student-web/student-web/vite.config.js
+- **修改内容**：添加了对8081端口的代理配置，用于连接第二个后端服务
+  ```javascript
+  // 添加的代理配置
+  '/api2': {
+    target: 'http://localhost:8081',
+    changeOrigin: true,
+    rewrite: (path) => path.replace(/^\/api2/, '')
+  }
+  ```
+
+### 2. 学生端 API 请求文件
+
+#### 2.1 questionBank.js
+- **文件路径**：dev-student-web/student-web/src/api/questionBank.js
+- **修改内容**：更新了接口路径，使其指向正确的后端服务
+  - 将原来的 `/student/subject/list` 等接口替换为 `/api2/question/list` 和 `/api2/question/knowledge/{knowledge}`
+
+#### 2.2 doExercise.js
+- **文件路径**：dev-student-web/student-web/src/api/doExercise.js
+- **修改内容**：更新了接口路径，使其指向正确的后端服务
+  - 将原来的 `/student/question/listByChapter` 等接口替换为 `/api2/question/list`、`/api2/answer/submit` 和 `/api2/wrong/list`
+
+#### 2.3 wrongQuestion.js
+- **文件路径**：dev-student-web/student-web/src/api/wrongQuestion.js
+- **修改内容**：更新了接口路径，使其指向正确的后端服务
+  - 将原来的 `/student/wrongQuestion/list` 等接口替换为 `/api2/wrong/list`、`/api2/wrong/toggleCollect`、`/api2/wrong/delete` 和 `/api2/wrong/markMastered`
+
+### 3. 教师端前端配置
+- **文件路径**：dev-teacher-admin-web/teacher-admin-web/vite.config.js
+- **修改内容**：添加了对8081端口的代理配置，用于连接第二个后端服务
+  ```javascript
+  // 添加的代理配置
+  '/api2': {
+    target: 'http://localhost:8081',
+    changeOrigin: true,
+    rewrite: (path) => path.replace(/^\/api2/, '')
+  }
+  ```
+
+## 测试三端联调的步骤
+
+### 1. 准备工作
+- **安装 Java 17**：确保系统安装了 Java 17 版本
+- **安装 MySQL**：确保 MySQL 数据库已安装并运行
+- **创建数据库**：创建名为 `exam_online` 的数据库
+- **运行初始化 SQL**：执行 `dev-db-deploy-doc/sql-doc/init.sql` 脚本初始化数据库
+
+### 2. 启动后端服务
+
+#### 2.1 启动第一个后端服务（端口8080）
+```bash
+cd dev-api-paper-message-stat/backend-server
+mvn spring-boot:run
+```
+
+#### 2.2 启动第二个后端服务（端口8081）
+```bash
+cd dev-api-question-exam/backend-server
+mvn spring-boot:run
+```
+
+### 3. 启动前端服务
+
+#### 3.1 启动学生端前端服务
+```bash
+cd dev-student-web/student-web
+npm install  # 首次运行时需要安装依赖
+npm run dev
+```
+- 访问地址：http://localhost:5173/
+
+#### 3.2 启动教师端前端服务
+```bash
+cd dev-teacher-admin-web/teacher-admin-web
+npm install  # 首次运行时需要安装依赖
+npm run dev
+```
+- 访问地址：http://localhost:5174/
+
+### 4. 测试功能
+
+#### 4.1 学生端测试
+- **题库功能**：点击「题库」查看题目列表
+- **答题功能**：点击题目进行答题
+- **错题本**：查看错题记录
+
+#### 4.2 教师端测试
+- **登录功能**：使用教师账号登录
+- **题目管理**：添加、编辑、删除题目
+- **试卷管理**：创建和管理试卷
+- **考试管理**：查看考试记录和统计数据
+
+### 5. 问题排查
+- **后端服务启动失败**：检查 Java 版本是否为 17，检查数据库连接配置
+- **前端无法访问后端**：检查前端代理配置是否正确，检查后端服务是否运行
+- **API 调用失败**：检查接口路径是否正确，检查后端服务是否提供了相应的接口
+
+## 服务运行状态
+- **学生端前端服务**：运行在 http://localhost:5173/
+- **教师端前端服务**：运行在 http://localhost:5174/
+- **后端服务1**：运行在 http://localhost:8080/api
+- **后端服务2**：运行在 http://localhost:8081/api
