@@ -12,6 +12,31 @@ spring:
     username: root
     password: 11223344
 
+  # ===================== 新增 Redis =====================
+  redis:
+    host: localhost
+    port: 6379
+    database: 0
+    timeout: 10000
+    lettuce:
+      pool:
+        max-active: 32
+        max-idle: 16
+        min-idle: 8
+
+  # ===================== 新增 RabbitMQ =====================
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    virtual-host: /
+
+# ===================== 新增 Redisson 分布式锁 =====================
+redisson:
+  singleServerConfig:
+    address: redis://localhost:6379
+
 mybatis-plus:
   mapper-locations: classpath:mapper/*.xml
   type-aliases-package: com.stu.backendserver.entity

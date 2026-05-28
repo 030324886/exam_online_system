@@ -6,10 +6,34 @@ server:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    # 关键：添加 allowPublicKeyRetrieval=true + useSSL=false
     url: jdbc:mysql://localhost:3306/exam_online?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
     username: root
-    password: 11223344  # 替换为你本地MySQL密码
+    password: 11223344
+
+  # -------- 新增：Redis 配置 --------
+  redis:
+    host: localhost
+    port: 6379
+    database: 0
+    timeout: 10000
+    lettuce:
+      pool:
+        max-active: 32
+        max-idle: 16
+        min-idle: 8
+
+  # -------- 新增：RabbitMQ 配置 --------
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    virtual-host: /
+
+# -------- 新增：Redisson 分布式锁配置 --------
+redisson:
+  singleServerConfig:
+    address: redis://localhost:6379
 
 mybatis-plus:
   mapper-locations: classpath:mapper/*.xml
